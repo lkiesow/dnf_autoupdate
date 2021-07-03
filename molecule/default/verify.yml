@@ -5,4 +5,5 @@
   gather_facts: false
   tasks:
   - name: check timer is active
-    command: systemctl is-active dnf-automatic.timer
+    command:  # noqa no-changed-when command-instead-of-module
+      cmd: systemctl is-active dnf-automatic.timer
