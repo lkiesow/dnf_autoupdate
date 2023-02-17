@@ -6,15 +6,17 @@ galaxy_info:
   namespace: lkiesow
   description: Enables automatic package update via dnf
   license: BSD-3-Clause
-  min_ansible_version: 2.9
+  min_ansible_version: 2.9.0
   galaxy_tags:
     - dnf
     - autoupdate
     - package
+    - system
   platforms:
     - name: EL
       versions:
-        - 8
+        - '8'
+        - '9'
     - name: Fedora
       versions:
         - all

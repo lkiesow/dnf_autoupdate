@@ -4,6 +4,6 @@
   hosts: all
   gather_facts: false
   tasks:
-  - name: check timer is active
-    command:  # noqa no-changed-when command-instead-of-module
-      cmd: systemctl is-active dnf-automatic.timer
+    - name: check timer is active
+      command:  # noqa no-changed-when command-instead-of-module
+        cmd: systemctl is-active dnf-automatic.timer
