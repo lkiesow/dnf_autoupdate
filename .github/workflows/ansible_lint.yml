@@ -21,9 +21,7 @@ jobs:
           yamllint
           molecule
           molecule-docker
-
-      - name: reset molecule
-        run: molecule reset
+          molecule-podman
 
       - name: test playbook
         run: molecule test --driver-name docker
