@@ -6,6 +6,7 @@ platforms:
     image: quay.io/centos/centos:stream9
     pre_build_image: false
     command: /sbin/init
+    privileged: true
     tmpfs:
       - /run
       - /tmp
