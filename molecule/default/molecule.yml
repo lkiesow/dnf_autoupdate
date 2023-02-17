@@ -2,10 +2,10 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: podman
 platforms:
   - name: dnf-autoupdate-centos
-    image: quay.io/centos/centos:stream8
+    image: quay.io/centos/centos:stream9
     pre_build_image: false
     command: /sbin/init
     privileged: true

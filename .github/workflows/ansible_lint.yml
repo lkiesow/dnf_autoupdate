@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: install dependencies
         run: >
@@ -19,9 +19,7 @@ jobs:
           ansible
           ansible-lint
           yamllint
-          molecule
-          molecule-docker
-          molecule-podman
 
-      - name: test playbook
-        run: molecule test --driver-name docker
+      - run: yamllint .
+
+      - run: ansible-lint
