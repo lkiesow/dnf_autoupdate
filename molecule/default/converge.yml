@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include dnf_autoupdate"
-      include_role:
-        name: "dnf_autoupdate"
+    - name: Include dnf_autoupdate
+      ansible.builtin.include_role:
+        name: dnf_autoupdate"
