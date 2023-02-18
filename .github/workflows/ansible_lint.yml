@@ -52,11 +52,10 @@ jobs:
           set -eux
           ip a
           ping -c3 test.el9
-          ping -4 -c3 google.com
-          ping -6 -c3 google.com
+          curl -I -4 google.com
+          curl -I -6 google.com
           sudo lxc-attach -n el9 -- ip a
           sudo lxc-attach -n el9 -- cat /etc/resolv.conf
-          sudo lxc-attach -n el9 -- ping -6 -c3 google.com
           sudo lxc-attach -n el9 -- curl -6 -I google.com
           sudo lxc-attach -n el9 -- curl -4 -I google.com
 
