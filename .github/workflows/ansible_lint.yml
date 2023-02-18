@@ -86,6 +86,10 @@ jobs:
           sudo lxc-attach -n el9 -- cat /etc/resolv.conf
           sudo lxc-attach -n el9 -- curl -vvv -4 -I http://10.0.3.1:8000
 
+      - name: tracepath
+        run: |
+          tracepath lkiesow.de
+
       - name: tests eytern http
         run: |
           curl -vvv -4 -I https://lkiesow.de
