@@ -47,6 +47,10 @@ jobs:
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
+      - name: nat set-up
+        run: |
+          sudo iptables -t nat -A POSTROUTING -s '10.0.3.1/24' -o eth0 -j MASQUERADE
+
       - name: test server
         run: |
           set -eux
@@ -56,19 +60,19 @@ jobs:
       - name: tests
         run: |
           set -eux
-          stdbuf -o0 ip a
-          stdbuf -o0 route
-          stdbuf -o0 ping -c3 test.el9
-          stdbuf -o0 cat /etc/lxc/default.conf
+          ip a
+          route
+          ping -c3 test.el9
+          cat /etc/lxc/default.conf
 
       - name: tests
         run: |
           set -eux
-          stdbuf -o0 sudo lxc-attach -n el9 -- ip a
-          stdbuf -o0 sudo lxc-attach -n el9 -- ip r
-          stdbuf -o0 sudo lxc-attach -n el9 -- cat /etc/resolv.conf
-          stdbuf -o0 sudo lxc-attach -n el9 -- curl -vvv -4 -I http://10.0.3.1:8000
-          stdbuf -o0 sudo lxc-attach -n el9 -- curl -vvv -4 -I https://lkiesow.de
+          sudo lxc-attach -n el9 -- ip a
+          sudo lxc-attach -n el9 -- ip r
+          sudo lxc-attach -n el9 -- cat /etc/resolv.conf
+          sudo lxc-attach -n el9 -- curl -vvv -4 -I http://10.0.3.1:8000
+          sudo lxc-attach -n el9 -- curl -vvv -4 -I https://lkiesow.de
 
       - name: configure sshd
         run: |
