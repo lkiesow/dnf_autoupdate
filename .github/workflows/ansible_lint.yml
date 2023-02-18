@@ -55,13 +55,13 @@ jobs:
         run: |
           sudo iptables -t nat -A POSTROUTING -s '10.0.3.0/24' -o eth0 -j MASQUERADE
 
-      - name: list iptables rules
-        run: |
-          sudo iptables -L
-
       - name: take docker network down
         run: |
           sudo ip link set dev docker0 down
+
+      - name: list iptables rules
+        run: |
+          sudo iptables -S
 
       - name: test server
         run: |
