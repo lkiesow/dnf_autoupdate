@@ -49,11 +49,14 @@ jobs:
 
       - name: tests
         run: |
+          set -eux
           ip a
+          ping -n3 test.el9
           sudo lxc-attach -n el9 -- ip a
           sudo lxc-attach -n el9 -- cat /etc/resolv.conf
-          sudo lxc-attach -n el9 -- curl -4 -I google.com
+          sudo lxc-attach -n el9 -- ping -6 -n3 google.com
           sudo lxc-attach -n el9 -- curl -6 -I google.com
+          sudo lxc-attach -n el9 -- curl -4 -I google.com
 
       - name: configure sshd
         run: |
