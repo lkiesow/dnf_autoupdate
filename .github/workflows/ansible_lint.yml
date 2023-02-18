@@ -61,7 +61,7 @@ jobs:
 
       - name: list iptables rules
         run: |
-          sudo iptables -S
+          sudo iptables -t nat -S
 
       - name: test server
         run: |
