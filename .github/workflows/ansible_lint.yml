@@ -51,13 +51,13 @@ jobs:
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
-      - name: list iptables rules
-        run: |
-          sudo iptables -L
-
       - name: nat set-up
         run: |
           sudo iptables -t nat -A POSTROUTING -s '10.0.3.0/24' -o eth0 -j MASQUERADE
+
+      - name: list iptables rules
+        run: |
+          sudo iptables -L
 
       - name: test server
         run: |
