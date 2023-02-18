@@ -47,6 +47,14 @@ jobs:
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
+      - name: tests
+        run: |
+          ip a
+          sudo lxc-attach -n el9 -- ip a
+          sudo lxc-attach -n el9 -- cat /etc/resolv.conf
+          sudo lxc-attach -n el9 -- curl -4 -I google.com
+          sudo lxc-attach -n el9 -- curl -6 -I google.com
+
       - name: configure sshd
         run: |
           sudo lxc-attach -n el9 -- dnf install -y openssh-server
