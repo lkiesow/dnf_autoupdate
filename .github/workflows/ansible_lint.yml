@@ -47,6 +47,12 @@ jobs:
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
+      - name: test server
+        run: |
+          set -eux
+          python -m http.server &
+          sleep 1
+
       - name: tests
         run: |
           set -eux
@@ -61,6 +67,7 @@ jobs:
           stdbuf -o0 sudo lxc-attach -n el9 -- ip a
           stdbuf -o0 sudo lxc-attach -n el9 -- ip r
           stdbuf -o0 sudo lxc-attach -n el9 -- cat /etc/resolv.conf
+          stdbuf -o0 sudo lxc-attach -n el9 -- curl -vvv -4 -I http://10.0.3.1:8000
           stdbuf -o0 sudo lxc-attach -n el9 -- curl -vvv -4 -I https://google.com
 
       - name: configure sshd
