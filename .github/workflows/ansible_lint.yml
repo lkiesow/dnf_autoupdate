@@ -54,9 +54,9 @@ jobs:
           route
           ping -c3 test.el9
           sudo lxc-attach -n el9 -- ip a
+          sudo lxc-attach -n el9 -- route
           sudo lxc-attach -n el9 -- cat /etc/resolv.conf
-          sudo lxc-attach -n el9 -- curl -6 -I google.com
-          sudo lxc-attach -n el9 -- curl -4 -I google.com
+          sudo lxc-attach -n el9 -- curl -vvv -4 -I google.com
 
       - name: configure sshd
         run: |
