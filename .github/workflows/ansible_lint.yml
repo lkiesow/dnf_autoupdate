@@ -59,6 +59,10 @@ jobs:
         run: |
           sudo iptables -L
 
+      - name: take docker network down
+        run: |
+          sudo ip link set dev docker0 down
+
       - name: test server
         run: |
           set -eux
