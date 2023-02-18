@@ -40,7 +40,7 @@ jobs:
           --dist centos --release 9-Stream --arch amd64
           sudo lxc-start --name el9 --daemon
           while ! sudo lxc-info -n el9 | grep IP; do sleep 0.2; done
-          echo "$(lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
+          echo "$(sudo lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
 
       - name: generate ssh key
         run: |
