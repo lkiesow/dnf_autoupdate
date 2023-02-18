@@ -53,6 +53,7 @@ jobs:
           ip a
           route
           ping -c3 test.el9
+          cat /etc/lxc/default.conf
 
       - name: tests
         run: |
