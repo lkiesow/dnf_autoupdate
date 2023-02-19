@@ -19,7 +19,76 @@ jobs:
           ansible
           ansible-lint
           yamllint
+          molecule
 
-      - run: yamllint .
+      # Disable docker components
+      - name: stop docker
+        run: |
+          sudo systemctl stop docker
 
-      - run: ansible-lint
+      - name: take docker network down
+        run: |
+          sudo ip link set dev docker0 down
+
+      - name: clean up iptables
+        run: |
+          sudo iptables -P INPUT ACCEPT
+          sudo iptables -P FORWARD ACCEPT
+          sudo iptables -P OUTPUT ACCEPT
+          sudo iptables -F
+          sudo iptables -X
+          sudo iptables -t nat -F
+          sudo iptables -t nat -X
+
+      # LXC set-up
+      - name: install lxc
+        run: |
+          sudo apt install lxc
+
+      # yamllint disable rule:line-length
+      - name: create lxc container
+        run: |
+          sudo lxc-create -t download -n el9 -- --dist centos --release 9-Stream --arch amd64
+          sudo lxc-start --name el9 --daemon
+          while ! sudo lxc-info -n el9 | grep IP; do sleep 0.2; done
+          echo "$(sudo lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
+
+      - name: generate ssh key
+        run: |
+          install -m 0700 -d ~/.ssh/
+          ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+
+      - name: configure ssh
+        run: |
+          echo                                    >> ~/.ssh/config
+          echo 'Host test.el9'                    >> ~/.ssh/config
+          echo '  User root'                      >> ~/.ssh/config
+          echo '  IdentityFile ~/.ssh/id_ed25519' >> ~/.ssh/config
+
+      - name: configure and start sshd
+        run: |
+          sudo lxc-attach -n el9 -- dnf install -y openssh-server
+          sudo lxc-attach -n el9 -- install -m 0700 -d /root/.ssh/
+          cat ~/.ssh/id_ed25519.pub | sudo lxc-attach -n el9 -- tee /root/.ssh/authorized_keys
+          sudo lxc-attach -n el9 -- chmod 0600 /root/.ssh/authorized_keys
+          sudo lxc-attach -n el9 -- systemctl start sshd.service
+
+      # yamllint enable rule:line-length
+      - name: import ssh keys
+        run: |
+          ssh-keyscan test.el9 > ~/.ssh/known_hosts
+
+
+      # Run Tests
+
+      - name: yamllint
+        run: |
+          yamllint .
+
+      - name: ansible-lint
+        run: |
+          ansible-lint
+
+      - name: run molecule tests
+        run: |
+          molecule test
