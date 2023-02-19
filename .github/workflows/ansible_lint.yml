@@ -26,10 +26,6 @@ jobs:
         run: |
           sudo systemctl stop docker
 
-      - name: take docker network down
-        run: |
-          sudo ip link set dev docker0 down
-
       - name: clean up iptables
         run: |
           sudo iptables -P INPUT ACCEPT
