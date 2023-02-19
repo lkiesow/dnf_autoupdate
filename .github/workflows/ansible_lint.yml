@@ -53,6 +53,13 @@ jobs:
           ls -l ~/.ssh/
           cp -r ~/.ssh/id_ed25519 ~/.ssh/id_rsa
 
+      - name: configure ssh
+        run: |
+          echo                                    >> ~/.ssh/config
+          echo 'Host test.el9'                    >> ~/.ssh/config
+          echo '  User root'                      >> ~/.ssh/config
+          echo '  IdentityFile ~/.ssh/id_ed25519' >> ~/.ssh/config
+
       - name: iptables set-up
         run: |
           sudo iptables -P INPUT ACCEPT
