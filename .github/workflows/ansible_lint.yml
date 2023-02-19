@@ -21,46 +21,16 @@ jobs:
           yamllint
           molecule
 
-      - name: install lxc
-        run: |
-          sudo apt install lxc
-
+      # Disable docker components
       - name: stop docker
         run: |
           sudo systemctl stop docker
 
-      - name: yamllint
+      - name: take docker network down
         run: |
-          yamllint .
+          sudo ip link set dev docker0 down
 
-      - name: ansible-lint
-        run: |
-          ansible-lint
-
-      # yamllint disable rule:line-length
-      - name: create lxc container
-        run: |
-          sudo lxc-create -t download -n el9 -- \
-          --dist centos --release 9-Stream --arch amd64
-          sudo lxc-start --name el9 --daemon
-          while ! sudo lxc-info -n el9 | grep IP; do sleep 0.2; done
-          echo "$(sudo lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
-
-      - name: generate ssh key
-        run: |
-          install -m 0700 -d ~/.ssh/
-          ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
-          ls -l ~/.ssh/
-          cp -r ~/.ssh/id_ed25519 ~/.ssh/id_rsa
-
-      - name: configure ssh
-        run: |
-          echo                                    >> ~/.ssh/config
-          echo 'Host test.el9'                    >> ~/.ssh/config
-          echo '  User root'                      >> ~/.ssh/config
-          echo '  IdentityFile ~/.ssh/id_ed25519' >> ~/.ssh/config
-
-      - name: iptables set-up
+      - name: clean up iptables
         run: |
           sudo iptables -P INPUT ACCEPT
           sudo iptables -P FORWARD ACCEPT
@@ -70,55 +40,36 @@ jobs:
           sudo iptables -t nat -F
           sudo iptables -t nat -X
 
+      # LXC set-up
+      - name: install lxc
+        run: |
+          sudo apt install lxc
+
+      # yamllint disable rule:line-length
+      - name: create lxc container
+        run: |
+          sudo lxc-create -t download -n el9 -- --dist centos --release 9-Stream --arch amd64
+          sudo lxc-start --name el9 --daemon
+          while ! sudo lxc-info -n el9 | grep IP; do sleep 0.2; done
+          echo "$(sudo lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
+
       - name: nat set-up
         run: |
           sudo iptables -t nat -A POSTROUTING -s '10.0.3.0/24' -o eth0 -j MASQUERADE
 
-      - name: take docker network down
+      - name: generate ssh key
         run: |
-          sudo ip link set dev docker0 down
+          install -m 0700 -d ~/.ssh/
+          ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
-      - name: list all iptables rules
+      - name: configure ssh
         run: |
-          sudo iptables -L
+          echo                                    >> ~/.ssh/config
+          echo 'Host test.el9'                    >> ~/.ssh/config
+          echo '  User root'                      >> ~/.ssh/config
+          echo '  IdentityFile ~/.ssh/id_ed25519' >> ~/.ssh/config
 
-      - name: list iptables nat rules
-        run: |
-          sudo iptables -t nat -S
-
-      - name: test server
-        run: |
-          set -eux
-          python -m http.server &
-          sleep 1
-
-      - name: tests
-        run: |
-          set -eux
-          ip a
-          ip r
-          route
-          ping -c3 test.el9
-          cat /etc/lxc/default.conf
-
-      - name: tests
-        run: |
-          set -eux
-          sudo lxc-attach -n el9 -- ip a
-          sudo lxc-attach -n el9 -- ip r
-          sudo lxc-attach -n el9 -- cat /etc/resolv.conf
-          sudo lxc-attach -n el9 -- curl -vvv -4 -I http://10.0.3.1:8000
-
-      - name: tracepath
-        run: |
-          tracepath lkiesow.de
-
-      - name: tests eytern http
-        run: |
-          curl -vvv -4 -I https://lkiesow.de
-          sudo lxc-attach -n el9 -- curl -vvv -4 -I https://lkiesow.de
-
-      - name: configure sshd
+      - name: configure and start sshd
         run: |
           sudo lxc-attach -n el9 -- dnf install -y openssh-server
           sudo lxc-attach -n el9 -- install -m 0700 -d /root/.ssh/
@@ -130,6 +81,17 @@ jobs:
       - name: import ssh keys
         run: |
           ssh-keyscan test.el9 > ~/.ssh/known_hosts
+
+
+      # Run Tests
+
+      - name: yamllint
+        run: |
+          yamllint .
+
+      - name: ansible-lint
+        run: |
+          ansible-lint
 
       - name: run molecule tests
         run: |
