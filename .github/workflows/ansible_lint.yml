@@ -53,10 +53,6 @@ jobs:
           while ! sudo lxc-info -n el9 | grep IP; do sleep 0.2; done
           echo "$(sudo lxc-info -n el9 | sed -n 's/^IP: *//p') test.el9" | sudo tee -a /etc/hosts
 
-      - name: nat set-up
-        run: |
-          sudo iptables -t nat -A POSTROUTING -s '10.0.3.0/24' -o eth0 -j MASQUERADE
-
       - name: generate ssh key
         run: |
           install -m 0700 -d ~/.ssh/
