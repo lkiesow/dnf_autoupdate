@@ -51,6 +51,14 @@ jobs:
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
 
+      - name: iptables set-up
+        run: |
+          iptables -P INPUT ACCEPT
+          iptables -P FORWARD ACCEPT
+          iptables -P OUTPUT ACCEPT
+          iptables -F
+          iptables -X
+
       - name: nat set-up
         run: |
           sudo iptables -t nat -A POSTROUTING -s '10.0.3.0/24' -o eth0 -j MASQUERADE
@@ -59,7 +67,11 @@ jobs:
         run: |
           sudo ip link set dev docker0 down
 
-      - name: list iptables rules
+      - name: list all iptables rules
+        run: |
+          sudo iptables -L
+
+      - name: list iptables nat rules
         run: |
           sudo iptables -t nat -S
 
