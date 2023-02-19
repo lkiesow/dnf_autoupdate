@@ -50,6 +50,8 @@ jobs:
         run: |
           install -m 0700 -d ~/.ssh/
           ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+          ls -l ~/.ssh/
+          cp -r ~/.ssh/id_ed25519 ~/.ssh/id_rsa
 
       - name: iptables set-up
         run: |
