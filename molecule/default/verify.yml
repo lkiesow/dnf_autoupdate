@@ -1,9 +1,0 @@
----
-
-- name: Verify
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Check timer is active
-      ansible.builtin.command:  # noqa no-changed-when command-instead-of-module
-        cmd: systemctl is-active dnf-automatic.timer

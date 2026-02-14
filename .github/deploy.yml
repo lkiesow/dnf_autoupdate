@@ -1,0 +1,6 @@
+- hosts: all
+  become: true
+  roles:
+    - role: dnf_autoupdate
+      dnf_autoupdate_upgrade_type: default
+      dnf_autoupdate_reboot: when-needed
