@@ -1,5 +1,12 @@
 ---
 
+# Automatic reboot was added in EL 9
+- name: Assure at least EL9
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'RedHat'
+      - ansible_facts['distribution_major_version'] | int >= 9
+
 - name: Install dnf-automatic
   ansible.builtin.package:
     name: dnf-automatic
@@ -7,15 +14,17 @@
 - name: Configure automatic updates
   ansible.builtin.lineinfile:
     path: /etc/dnf/automatic.conf
-    regexp: '^{{ item.key }}'
+    regexp: '^{{ item.key }}[ =]'
     line: '{{ item.key }} = {{ item.val }}'
   loop:
     - key: upgrade_type
-      val: default
+      val: '{{ dnf_autoupdate_upgrade_type }}'
     - key: download_updates
       val: 'yes'
     - key: apply_updates
       val: 'yes'
+    - key: reboot
+      val: '{{ dnf_autoupdate_reboot }}'
 
 - name: Enable automatic updates
   ansible.builtin.service:
