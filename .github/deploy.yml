@@ -1,6 +1,7 @@
 ---
 
-- hosts: all
+- name: Playbook for test deployment
+  hosts: all
   become: true
   roles:
     - role: dnf_autoupdate
