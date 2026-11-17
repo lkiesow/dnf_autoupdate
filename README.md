@@ -3,6 +3,12 @@ Ansible: DNF Autoupdate Role
 
 Ansible role to activate automated package updates via dnf.
 
+Supported Platforms
+-------------------
+
+- Enterprise Linux 9 and newer (e.g. CentOS Stream, AlmaLinux, Rocky Linux)
+- Fedora
+
 Configuration
 -------------
 

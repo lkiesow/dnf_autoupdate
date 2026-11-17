@@ -12,12 +12,4 @@ galaxy_info:
     - autoupdate
     - package
     - system
-  platforms:
-    - name: EL
-      versions:
-        - '8'
-        - '9'
-    - name: Fedora
-      versions:
-        - all
 dependencies: []
