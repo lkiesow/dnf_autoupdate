@@ -46,12 +46,6 @@ jobs:
         run: |
           ansible-lint
 
-      - name: create role structure for tests
-        working-directory: .github
-        run: |
-          mkdir -p roles
-          ln -s .. roles/dnf_autoupdate
-
       - name: test deployment
         working-directory: .github
         run: |
